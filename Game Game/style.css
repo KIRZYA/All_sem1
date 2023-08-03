@@ -1,0 +1,62 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+    background-image: url("BG2.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#dealer-cards img {
+    height: 175px;
+    width: 125px;
+    margin: 1px;
+}
+
+#hidden {
+    height: 175px;
+    width: 125px;
+    margin: 1px;
+}
+
+#your-cards img {
+    height: 175px;
+    width: 125px;
+    margin: 1px;
+}
+
+#hit {
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+}
+
+#stay {
+    width: 100px;
+    height: 50px;
+    font-size: 20px;
+}
+
+#div1 {
+    position: absolute;
+    top: 40%;
+   
+    left: 10%;
+    
+}
+
+.hidden {
+    background-image: url("./cards/backside.png");
+    height: 175px;
+    width: 125px;
+    margin: 1px;
+  }
+
+#div3 {
+    height: 470px;
+    width: 255px;
+    margin-top: 0px;
+    margin-left: -127px;
+    position:fixed;
+    
+    z-index: 1;
+}

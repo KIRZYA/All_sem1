@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Black Jack - Лобби</title>
+  <link rel="stylesheet" href="style_1.css">
+</head>
+
+<body>
+  <h1>Добро пожаловать в лобби Black Jack</h1>
+  <div id="lobby-options">
+    <div id="div1">
+    <h3>Выберите стартовые деньги:</h3>
+    <input type="number" id="starting-money" min="1" max="10000" step="1" value="100" required>
+    </div>
+    <br><br>
+    <div id="div2">
+    <h3>Выберите деньги для полной победы:</h3>
+    <input type="number" id="full-victory-money" min="1" max="100000" step="1" value="1000" required>
+    </div>
+    <br><br>
+    <button id="start-game">Начать игру</button>
+  </div>
+
+  <script src="lobby.js"></script>
+</body>
+
+</html>
