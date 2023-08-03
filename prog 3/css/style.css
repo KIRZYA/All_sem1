@@ -1,0 +1,65 @@
+
+body {
+margin: 0;
+padding: 0;
+background: #333;
+}
+
+.muse {
+	width: 50%;
+	padding: 20px;
+	margin: 100px auto;
+	background: #399;
+	box-shadow: 0 0 40px #262626 inset;
+	border: 2px solid #262626;
+	border-radius: 15px;
+	color: lightgrey;
+	font-family: arial;
+}
+
+.muse p {
+	border-bottom: 1px dashed #262626;
+	padding: 10px 0;
+	margin: 10px 0;
+	line-height: 150%;
+}
+span.play {
+background:url(../images/play.png);
+width: 24px;
+height: 24px;
+display: block;
+float: left;
+margin: 0 10px 0 0;
+cursor: pointer;
+}
+
+
+
+
+body{
+    background-color:black;
+    animation: image 20s infinite alternate;
+    animation:image 20s infinite alternate;
+    animation:image 20s infinite alternate;
+}
+
+@keyframes image{
+    0%{
+background-color:blue;
+}
+25%/{
+    background-color:red;
+}
+50%{
+    background-color:green;
+}
+75%{
+
+    background-color:pink;
+}
+100%{
+    background-color:yellow;
+    }
+  }  
+
+  

@@ -1,0 +1,365 @@
+<html>
+    <head></head>
+    <body>
+        <div id="gameStatus"></div>
+        <div id="playerHand"></div>
+        <button id="hitButton">Hit</button>
+        <button id="standButton">Stand</button>
+        <script>
+            class Card {
+                constructor(v, s) {
+                    this.value = v;
+                    this.suit = s;
+                }
+                toString() {
+                    let valName = ["", "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+                    let suiName = ["♥", "♦", "♣", "♠"];
+                    return valName[this.value] + suiName[this.suit];
+                }
+            }
+        
+            class Deck {
+                #allCards
+                constructor() {
+                    this.#allCards = [];
+                }
+                allCard() {
+                    for (let i = 0; i <= 3; i++) {
+                        for (let b = 2; b <= 14; b++) {
+                            this.#allCards.push(new Card(b, i))
+                        }
+                    }
+                }
+                shuffle() {
+                    let m = this.#allCards.length;
+                    let t;
+                    let i;
+                    while (m) {
+                        i = Math.floor(Math.random() * m--);
+                        t = this.#allCards[m];
+                        this.#allCards[m] = this.#allCards[i];
+                        this.#allCards[i] = t;
+                    }
+                }
+                showDeck() {
+                    console.log(this.#allCards.join("; "));
+                }
+                dealCard() {
+                    return this.#allCards.shift();
+                }
+                getCardsNumber() {
+                    return this.#allCards.length;
+                }
+            }
+        
+            class Player {
+                constructor(name, money) {
+                    this.name = name;
+                    this.money = money;
+                    this.hand = [];
+                    this.isHumanPlayer = false;
+                    this.hasStopped = false;
+                }
+        
+                takeCard(deck) {
+                    this.hand.push(deck.dealCard());
+                }
+        
+                reset() {
+                    this.hasStopped = false;
+                    this.hand.length = 0;
+                }
+        
+                decide2TakeCard() {
+                    return this.calculateCurrentScore() <= 16;
+                }
+        
+                calculateCurrentScore() {
+                    let score = 0;
+                    let numOfAces = 0;
+        
+                    for (let i = 0; i < this.hand.length; i++) {
+                        let card = this.hand[i];
+                        if (card.value === 14) {
+                            numOfAces++;
+                        }
+                        score += Math.min(card.value, 10);
+                    }
+        
+                    for (let i = 0; i < numOfAces; i++) {
+                        if (score + 10 <= 21) {
+                            score += 10;
+                        }
+                    }
+        
+                    return score;
+                }
+                countCardsInHand(){
+                    return this.hand.length;
+                }
+                getHighestCardValueInHand(){
+                    if (this.hand.length === 0) {
+                        return 0;
+                    } else {
+                        let highestValue = 0;
+                        for (let i = 0; i < this.hand.length; i++) {
+                            let card = this.hand[i];
+                            highestValue = Math.max(highestValue, card.value);
+                        }
+                        return highestValue;
+                    }
+                }
+                
+                getNumberOfPairsInHand(){
+                    let pairs = 0;
+                    let valueCount = {};
+                    for (let i = 0; i < this.hand.length; i++) {
+                        let card = this.hand[i];
+                        if (valueCount[card.value]) {
+                            valueCount[card.value]++;
+                            if (valueCount[card.value] === 2) {
+                                pairs++;
+                            }
+                        } else {
+                            valueCount[card.value] = 1;
+                        }
+                    }
+                    return pairs;
+                }
+                
+                getNumberOfSuitInHand(suit){
+                    let count = 0;
+                    for (let i = 0; i < this.hand.length; i++) {
+                        let card = this.hand[i];
+                        if (card.suit === suit) {
+                            count++;
+                        }
+                    }
+                    return count;
+                
+                }
+
+            }
+            class Bot extends Player {
+                constructor(name, money) {
+            super(name, money);
+            this.isHumanPlayer = false;
+            }
+
+            decide2TakeCard() {
+                return this.calculateCurrentScore() <= 16;
+                }
+            }
+            class HumanPlayer extends Player{
+                constructor (name,money){
+                    super(name,money)
+                    this.isHumanPlayer = true;
+                }
+
+                decide2TakeCard(){
+                    alert("Your cards: "+this.hand.join("; "));
+                    let ans = prompt("Will you take a new card? y/n");
+                    return ans=="y";
+                }
+            }
+        
+            class Game {
+                constructor() {
+                    this.deck = new Deck();
+                    this.players = [];
+                    this.playerId2Ask = 0;
+                }
+                addPlayer(pl){
+                    this.players.push(pl);
+                }
+
+                startTournament(n){//старт серії з декількох ігор
+                    //реєструємо перемоги гравців
+                    let victories={};
+                    for (let i=0; i<this.players.length; i++){
+                        victories[this.players[i].name] = 0;
+                    }
+                    //проводимо n ігор та дізнаємося переможців
+                    for (let k=0; k<n; k++){
+                        let gameResults = this.startGame();
+                        for (let i=0; i<gameResults.length; i++){
+                            victories[gameResults[i].name]++;
+                        }
+                    }
+
+                    console.log(victories)
+                }
+
+                startGame(){
+                    //створити нову колоду та перетасувати її
+                    this.deck.allCard();
+                    this.deck.shuffle();
+
+                    //скидаємо hasStopped у всіх гравців у false, а також - карти в руці
+                    for (let i=0; i<this.players.length; i++){
+                        this.players[i].reset();
+                    }
+                    
+                    this.playerId2Ask=-1;
+                    this.askNextPlayer2Move();
+                }
+
+                askNextPlayer2Move(){
+                    //перевіряємо, чи треба взагалі продовжувати гру?
+                    if ((this.haveAllPlayersStopped()||this.deck.getCardsNumber()==0)){
+                        console.log("Game Results",this.finalizeGame())
+                    }else{
+                        //якого гравця ми маємо спитати про його хід?
+                        this.playerId2Ask++;
+                        this.playerId2Ask%=this.players.length;
+
+                        let pl = this.players[this.playerId2Ask];
+                        if (pl.hasStopped){
+                            this.askNextPlayer2Move();
+                        }else{
+                            if (pl.isHumanPlayer){//або запрошуємо гравця зробити свій хід
+                                this.inviteHumanPlayer(pl)
+                            }else{//запрошуємо бота зробити свій хід
+                                this.inviteBotPlayer(pl);
+                                this.askNextPlayer2Move();
+                            }
+                        }                        
+                    }
+
+
+                }
+
+                finalizeGame(){
+                    //коли всі гравці зупинилися, треба підрахувати суму очок у їхніх колодах та визначити переможця
+                    //переможець той, хто наблизився до 21 або менше
+                    //будемо використовувати функцію calculateCurrentScore
+
+                    //просто будемо визначати гравця, який виграв (чи гравців)
+                    let winnerPlayers = [];
+                    let winnerScore = 0;
+
+                    for (let i=0; i<this.players.length; i++){
+                        let scr = this.players[i].calculateCurrentScore();
+                        if (scr <= 21){//якщо в гравця не перебір
+                            if (scr>winnerScore){
+                                winnerPlayers.length=0;
+                                winnerPlayers.push(this.players[i]);
+                                winnerScore=scr;
+                            }else{
+                                if (scr==winnerScore){
+                                    winnerPlayers.push(this.players[i]);
+                                }
+                            }
+                        }
+                    }
+                    return winnerPlayers;
+                }
+
+                inviteHumanPlayer(pl){
+                    console.log.innerHTML = (pl.name+", Ваш хід!"+"<br>Ваші карти: "+pl.hand.join(", "))
+                }
+
+                inviteBotPlayer(pl){
+                    if (pl.decide2TakeCard()){//рішення гравця - чи брати ще карту
+                        if (this.deck.getCardsNumber()>0){//даємо карту, якщо вони є в колоді
+                            pl.takeCard(this.deck) 
+                        }
+                    }else{
+                        pl.hasStopped = true;
+                    }   
+                                     
+                }
+
+                //чи всі гравці сказали "стоп"?
+                haveAllPlayersStopped(){
+                    for (let i=0; i<this.players.length; i++){
+                        let pl = this.players[i];
+                        //пробігаємося по всіх гравцях
+                        //і як тільки знаходимо такого, в кого pl.hasStopped==false
+                        //то перериваємося і повертаємо false
+
+                        if (pl.hasStopped==false){
+                            return false;
+                        }
+                    }
+                    //і лише наприкінці, якщо в усіх pl.hasStopped було true
+                    //то видаємо true
+                    return true;
+                }
+            }
+            let game = new Game();
+      let pl = new HumanPlayer("John", 100);
+      pl.isHumanPlayer = true; // Установка флага для обозначения человеческого игрока
+      game.addPlayer(pl);
+      let bot = new Bot("Bot", 100);
+      bot.isHumanPlayer = false;
+      game.addPlayer(bot);
+      game.startGame();
+
+      function updateGameStatus(status) {
+        const gameStatus = document.getElementById("gameStatus");
+        gameStatus.textContent = status;
+      }
+
+      function updatePlayerHand(hand) {
+        const playerHand = document.getElementById("playerHand");
+        playerHand.textContent = hand;
+      }
+
+      function updateUI() {
+        const currentPlayer = game.players[game.playerId2Ask];
+        const playerHandString = currentPlayer.hand.join(", ");
+        updatePlayerHand(`Your cards: ${playerHandString}`);
+
+        if (currentPlayer.isHumanPlayer && !currentPlayer.hasStopped) {
+          updateGameStatus(`${currentPlayer.name}, it's your turn!`);
+        } else {
+          updateGameStatus("");
+        }
+      }
+
+      function handleHit() {
+        const currentPlayer = game.players[game.playerId2Ask];
+        if (currentPlayer.isHumanPlayer && !currentPlayer.hasStopped) {
+          if (game.deck.getCardsNumber() > 0) {
+            currentPlayer.takeCard(game.deck);
+            updateUI();
+            checkPlayerStatus();
+          }
+        }
+      }
+
+      function handleStand() {
+        const currentPlayer = game.players[game.playerId2Ask];
+        if (currentPlayer.isHumanPlayer && !currentPlayer.hasStopped) {
+          currentPlayer.hasStopped = true;
+          updateUI();
+          game.askNextPlayer2Move();
+        }
+      }
+
+      function checkPlayerStatus() {
+        const currentPlayer = game.players[game.playerId2Ask];
+        if (currentPlayer.isHumanPlayer && currentPlayer.calculateCurrentScore() > 21) {
+          currentPlayer.hasStopped = true;
+          updateUI();
+          game.askNextPlayer2Move();
+        }
+      }
+
+      document.getElementById("hitButton").addEventListener("click", handleHit);
+      document.getElementById("standButton").addEventListener("click", handleStand);
+
+      updateUI();
+
+      document.addEventListener("keydown", function (event) {
+        const key = event.key.toLowerCase();
+        if (key === "h") {
+          handleHit();
+        } else if (key === "s") {
+          handleStand();
+        }
+      });
+        </script>
+    </body>
+</html>

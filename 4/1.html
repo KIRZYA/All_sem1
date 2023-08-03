@@ -1,0 +1,53 @@
+<html>
+<head>
+    <title>dd</title>
+</head>
+<body>
+    <script>
+       var n = 8; 
+        function computeDepth (n){
+  var res = 0;
+  
+  function computeDepth (n){
+  var ar=[];
+  for (let i=0;i<10; i++){
+    ar.push (false);
+  }
+  let k = 1;
+  while (true){
+    let m = n * k ;
+    
+    
+    let m1 = m;
+    while(m1>0){
+      let dig =m1%10;
+      ar[dig]=true;
+      
+      m1 = Math.floor(m1/10);
+    }
+    let allDigitsFound = true;
+    for (let i=0;i<10;i++){
+      if(ar[i]==false){
+        allDigitsFound = false;
+        break;
+      }
+      if (allDigitsFound){
+        return k;
+      }
+    }
+    
+    
+    console.log(k);
+  k++
+  }
+}
+}
+    </script>
+    
+</body>
+
+</html>
+
+
+
+

@@ -1,0 +1,62 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <script>
+            class Card {
+                constructor(v, s){
+                    this.value = v;
+                    this.suit = s;
+                }
+                toString(){
+                    let valName = ["","","2","3","4","5","6","7","8","9","10","B","D","K","T"];
+                    let suiName = ["♥","♦","♣","♠"];
+                    return valName[this.value]+suiName[this.suit];
+                }
+            }
+            class Deck{
+                constructor(){
+                    this.allCards = [];
+                }
+                allCard(){
+                    for (let i = 0; i<=3; i++){
+                        for (let b = 2; b<=14; b++){
+                            this.allCards.push(new Card(b,i))
+                        }
+                    }
+                }
+                shuffle(){
+                    let m = this.allCards.length;
+                    let t;
+                    let i;
+                    while (m) {
+                    i = Math.floor(Math.random() * m--);
+                    t = this.allCards[m];
+                    this.allCards[m] = this.allCards[i];
+                    this.allCards[i] = t;
+                    }
+
+            }
+                showDeck(){
+                    console.log(this.allCards.join("; "));
+                
+                }
+                dealCard(){
+                    this.card.shift();
+                }
+        }
+        
+            class Player{
+                constructor(name,money){
+                    this.name = name;
+                    this.money = money;
+                    this.hand = [];
+                }
+
+                takeCard(deck){
+                    this.hand.push(deck.dealCard())
+                }
+            }
+        </script>
+    </body>
+</html>

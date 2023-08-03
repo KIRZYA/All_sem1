@@ -1,0 +1,170 @@
+<html>
+<head>
+
+</head>
+<body>
+<script>
+console.log()
+
+class Block{
+    constructor(ar){
+        this.width = ar[0];
+        this.length = ar[1];
+        this.height = ar[2];
+
+    }
+    getWidth(){
+        return this.width;
+    }  
+    getLength(){
+        return this.length;
+    }  
+    getHeight(){
+        return this.height;
+    }
+    getPer(){
+       return 2*this.height+2*this.length+2*this.width;
+    }
+    getVolume(){
+        return  this.height*this.length*this.width;
+    }
+    getSurf(){
+        return 2*this.height*this.length+2*this.length*this.width+2*this.height*this.width;
+    }
+
+}
+
+
+let b = new Block([2,4,6]);
+console.log(b.getWidth())
+console.log(b.getPer())
+console.log(b.getVolume())
+console.log(b.getSurf())
+
+</script>
+
+</body>
+
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        class Vehicle {
+            constructor (license) {
+                this.license = license;
+                this.length;
+            }
+            
+        }
+
+        class Bike extends Vehicle {
+            constructor (license) {
+                super(license);
+            }
+        }
+        class Car extends Vehicle {
+            constructor (license) {
+                super(license);
+            }
+        }
+        class Van extends Vehicle {
+            constructor (license) {
+                super(license);
+            }
+        }
+
+        class ParkingLot {
+            constructor(size) {
+                this.slots = [];
+                for (let i = 0; i < size; i++) {
+                    this.slots.push(null);
+                }
+            }
+            park(vehicle) {
+                let len;
+                if(vehicle instanceof Bike) {
+                    len = 1;
+                    this.length = len;
+                }
+                else if (vehicle instanceof Car) {
+                    len = 2;
+                    this.length = len;
+                }
+                else {
+                    len = 3;
+                    this.length = len;
+                }
+
+                let id = this.findStartOffFreeSlots(len);
+                if (id == -1) {
+                    return false;
+                }
+                else {
+                    for (let l = id; l < id + len; l++) {
+                        this.slots[l] = vehicle.license;
+                    }
+                    return true;
+                }
+            }
+            retrieve(license) {
+                let x = 0;
+                for (let lic of this.slots) {
+                    alert(lic);
+                    if (lic == license) {
+                        for (let i = x; i < this.length; i++) {
+                            this.slots[i] = null;
+                        }
+                    }
+                    x++;
+                }
+            }
+
+            findStartOffFreeSlots(len) {
+                let res = -1;
+                for (let i = 0; i < this.slots.length; i++) {
+                    if (this.slots[i] == null) {
+                        let canPlace = true;
+
+                        for (let j = i + 1; j < i+len; j++) {
+                            if (this.slots[j] !== null) {
+                                canPlace = false;
+                                break;
+                            }
+                        }
+                        if (canPlace) {
+                            res = i;
+                            break;
+                        }
+                    }
+                }
+
+                return res;
+            }
+
+            show() {
+                console.log(this.slots);
+            }
+        }
+        
+        let p = new ParkingLot(5);
+        p.show();
+        p.park(new Car("C1"));
+        p.show();
+        p.park(new Car("C2"));
+        p.show();
+        p.retrieve("C2");
+        p.show();
+
+    </script>
+    
+</body>
+</html> -->

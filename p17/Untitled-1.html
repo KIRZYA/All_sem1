@@ -1,0 +1,202 @@
+<html>
+<head>
+  <script src="pixi.js"></script>
+</head>
+<body>
+<script>
+
+class Player {
+  constructor(name, money) {
+    this.name = name;
+    this.money = money;
+    this.hand = [];
+  }
+
+  receiveCard(card) {
+    this.hand.push(card);
+  }
+
+  clearHand() {
+    this.hand = [];
+  }
+}
+
+class Deck {
+  constructor() {
+    this.cards = [];
+    this.createDeck();
+    this.shuffleDeck();
+  }
+
+  createDeck() {
+    const suits = ['♠', '♣', '♥', '♦'];
+    const ranks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+    for (const suit of suits) {
+      for (const rank of ranks) {
+        this.cards.push(rank + suit);
+      }
+    }
+  }
+
+  shuffleDeck() {
+    for (let i = this.cards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
+    }
+  }
+
+  drawCard() {
+    return this.cards.pop();
+  }
+}
+
+class BlackjackGame {
+  constructor() {
+    this.deck = new Deck();
+    this.player = new Player('Player', 1000);
+    this.bot = new Player('Bot', 1000);
+    this.initializePIXI();
+    this.createTextFields();
+    this.createButtons();
+    this.startNewGame();
+  }
+
+  initializePIXI() {
+    this.app = new PIXI.Application({ width: 800, height: 600 });
+    document.body.appendChild(this.app.view);
+  }
+
+  createTextFields() {
+    this.playerText = new PIXI.Text('', { fill: 'white', fontSize: 24 });
+    this.playerText.position.set(20, 20);
+    this.app.stage.addChild(this.playerText);
+
+    this.botText = new PIXI.Text('', { fill: 'white', fontSize: 24 });
+    this.botText.position.set(20, 60);
+    this.app.stage.addChild(this.botText);
+  }
+
+  createButtons() {
+    this.hitButton = this.createButton('Hit', 100, 500, this.playerTurn.bind(this));
+    this.standButton = this.createButton('Stand', 250, 500, this.botTurn.bind(this));
+    this.restartButton = this.createButton('Restart', 400, 500, this.startNewGame.bind(this));
+  }
+
+  createButton(text, x, y, clickHandler) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.style.position = 'absolute';
+    button.style.left = x + 'px';
+    button.style.top = y + 'px';
+    button.addEventListener('click', clickHandler);
+    document.body.appendChild(button);
+
+    return button;
+  }
+
+  updateTextFields() {
+    this.playerText.text = `Player: Money - ${this.player.money}, Hand - ${this.player.hand.join(', ')}`;
+    this.botText.text = `Bot: Money - ${this.bot.money}, Hand - ${this.bot.hand.join(', ')}`;
+  }
+
+  startNewGame() {
+    this.deck = new Deck();
+    this.player.clearHand();
+    this.bot.clearHand();
+
+    this.player.receiveCard(this.deck.drawCard());
+    this.bot.receiveCard(this.deck.drawCard());
+    this.player.receiveCard(this.deck.drawCard());
+    this.bot.receiveCard(this.deck.drawCard());
+
+    this.updateTextFields();
+  }
+
+  playerTurn() {
+    this.player.receiveCard(this.deck.drawCard());
+    this.updateTextFields();
+
+    const playerValue = this.calculateHandValue(this.player);
+
+    if (playerValue >= 21) {
+      this.endGame();
+    }
+  }
+
+  botTurn() {
+  const botValue = this.calculateHandValue(this.bot);
+
+  if (botValue >= 17) {
+    this.endGame();
+  } else {
+    while (botValue < 17) {
+      this.bot.receiveCard(this.deck.drawCard());
+      this.updateTextFields();
+      const updatedBotValue = this.calculateHandValue(this.bot);
+
+      if (updatedBotValue === botValue) {
+        break;
+      } else {
+        botValue = updatedBotValue;
+      }
+    }
+
+    this.endGame();
+  }
+}
+
+  calculateHandValue(player) {
+    let sum = 0;
+    let hasAce = false;
+
+    for (const card of player.hand) {
+      const rank = card.slice(0, -1);
+
+      if (rank === 'A') {
+        sum += 11;
+        hasAce = true;
+      } else if (['K', 'Q', 'J'].includes(rank)) {
+        sum += 10;
+      } else {
+        sum += parseInt(rank);
+      }
+    }
+
+    if (sum > 21 && hasAce) {
+      sum -= 10;
+    }
+
+    return sum;
+  }
+
+  endGame() {
+  const playerValue = this.calculateHandValue(this.player);
+  const botValue = this.calculateHandValue(this.bot);
+
+  if (playerValue > 21 || (botValue <= 21 && botValue > playerValue)) {
+    console.log('Bot wins!');
+    this.bot.money += 100;
+    this.player.money -= 100; // Уменьшение денежного баланса игрока при проигрыше
+  } else if (botValue > 21 || (playerValue <= 21 && playerValue > botValue)) {
+    console.log('Player wins!');
+    this.player.money += 100;
+    this.bot.money -= 100; // Уменьшение денежного баланса бота при проигрыше
+  } else {
+    console.log('It\'s a draw!');
+    this.player.money += 50;
+    this.bot.money += 50;
+  }
+
+  this.updateTextFields();
+
+  setTimeout(() => {
+    this.startNewGame(); // Перезапуск игры через 2 секунды
+  }, 2000);
+}
+}
+const game = new BlackjackGame();
+
+</script>
+</body>
+</html>

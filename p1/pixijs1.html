@@ -1,0 +1,349 @@
+<html>
+<head>
+    <title>PIXI</title>
+    <script src="pixi.js"></script>
+</head>
+<body>
+    <script>
+        class World {
+            constructor (stage){
+                this.stage = stage;
+                this.obj = [];
+
+                this.mouseX = 0;
+                this.mouseY = 0;
+
+                this.isPaused = false;
+            }
+
+            step (dt){
+                if(this.isPaused){
+                    return;
+                }
+                if(world.player.hitPoints <= 0){
+                    alert('Game over' + " - " + world.player.score);
+                    world.isPaused = true;
+                    document.location.reload();
+                } 
+                for (let i=0; i<this.obj.length; i++){
+                    let ob = this.obj[i];
+                    ob.step(dt);
+                    ob.makeDecision();
+                    ob.checkCollision();
+                }
+                for (let i=this.obj.length-1; i>=0; i--){
+                    let ob = this.obj[i];
+                    if(ob.mustBRem){
+                        this.stage.removeChild(ob);
+                        this.obj.splice(i,1);
+                    }
+                }
+            }
+            CreateMovingObject(x, y, c, v){
+                let movingObject = new MovingObject(x, y, c, v);
+                app.stage.addChild(movingObject);
+                this.obj.push(movingObject);
+            }
+            HandlePointMove(e){
+                this.mouseX = e.global.x;
+                this.mouseY = e.global.y;
+            }
+            HandleKeyDown(e){
+                if(e.code == "Space"){
+                world.isPaused = !world.isPaused;
+            } 
+            }
+            HandlePointDown(e){
+              this.createObjectOfClass(Spawner, e.global.x, e.global.y)  
+            }
+            createPlayer(x, y){
+                this.Player = this.createObjectOfClass(Player, x, y);
+            }
+            createEnemy(x, y){
+                this.createObjectOfClass(Enemy, x, y);
+            }
+            createSpawner(x, y){
+                this.createObjectOfClass(Spawner, x, y);
+            }
+            createObjectOfClass(cl, x, y){
+                let ob = new cl(x, y)
+                ob.x = x;
+                ob.y = y;
+                this.stage.addChild(ob);
+                this.obj.push(ob);
+                
+
+                return ob;
+            }
+            listEnemiesAround(ob, rad){
+                let res =[];
+                for (let i=0; i<this.ob.length; i++){
+                    let ob1 = this.ob[i]
+                    if(ob1!=ob){
+                        if (ob1 instanceof Enemy){
+                            let dx = ob1.x-ob.x;
+                            let dy = ob1.y-ob.y;
+                            if (dx*dx+dy*dy<=rad*rad){
+                                res.push(ob1);
+                            }
+                        }
+                    }
+            }
+                return res;
+        }
+    }
+
+
+        class MovingObject extends PIXI.Container{
+            //класс пикси конт вже вміж робити маніпуляції з шейпом
+
+            constructor(x, y, c, v){
+                super();
+
+                this.mustBRem = false;
+                this.x = x;
+                this.y = y;
+                this.course = c;
+                this.speed = v;
+                this.turnSpeed = 0.1;
+                this.TargetCourse = this.course;
+
+                this.image = PIXI.Sprite.from('img1.png');
+                this.image.scale.set(0.25);
+                this.image.anchor.set(0.5,0.5);
+                this.addChild(this.image);
+            }
+            step(dt){
+                
+                let dPhi = this.TargetCourse-this.course;
+                if(dPhi!=0){
+                    if(dPhi>Math.PI){
+                        dPhi -= 2*Math.PI;
+                    }
+                    if(dPhi<-Math.PI){
+                        dPhi += 2*Math.PI;
+                    }
+                    let MaxTurn = this.turnSpeed*dt;
+                    if (Math.abs(dPhi)<=MaxTurn){
+                        this.course = this.TargetCourse;
+                    }
+                    else{
+                        this.course+=MaxTurn*Math.sign(dPhi);
+                    }
+                }
+                
+                let vx = this.speed*Math.sin(this.course);
+                let vy = -this.speed*Math.cos(this.course);
+
+                this.x+=vx*dt;
+                this.y+=vy*dt;
+
+                this.rotation = this.course;
+            }
+
+            makeDecision(){
+
+            }
+
+            checkCollision(){
+                
+            }
+
+            move2Point(x1, y1){
+                let dx = x1 - this.x;
+                let dy = y1 - this.y;
+                let phi = Math.atan2(dx, -dy);
+
+                this.TargetCourse = phi;
+            }
+
+        }
+        
+        class Player extends MovingObject{
+            
+           /* mousePR(){
+                let mouseDown = 0;
+                document.body.onmousedown = function() { 
+                mouseDown = 1;
+                }
+                document.body.onmouseup = function() {
+                mouseDown = 0;
+                }
+                if(mouseDown==1){
+                   this.image.speed = 2 
+                }
+                else{
+                    this.image.speed = 1
+                }
+            }
+            */
+            
+            constructor(x, y){
+                super(x, y, 0, 3);
+                this.image.tint = 0xff0000;
+                this.hitPoints = 100;
+                this.score = 0;
+            }
+            makeDecision(){
+                this.move2Point(world.mouseX, world.mouseY)
+            }
+        }
+        
+       
+        
+        
+        class Enemy extends MovingObject{
+            constructor(x, y){
+                super(x, y, 0, 1+Math.random());
+                this.image.tint = 0x00ff00;
+            }
+            makeDecision(){
+                /*if (Math.random()>0.01){
+                    return;
+                }
+                */
+                let vec0 = new PIXI.Point(world.Player.x-this.x, world.Player.y-this.y)
+            
+                let otherEnemies = world.listEnemiesAround(this,150);
+
+                let vec2 = new PIXI.Point(0, 0);
+                
+                for (let i=0; i<otherEnemies.length;i++){
+                    let ob1 = otherEnemies[i];
+                    let dx = ob1.x-this.x;
+                    let dy = ob1.y-this.y;
+                    let d = Math.sqrt(dx*dx+dy*dy);
+                    let coef = (150-d)/d;
+
+                    vec2.x += -coef*dx;
+                    vec2.y += -coef*dy;
+
+                }
+                
+                let vec5 = new PIXI.Point(vec0.x+vec2.x, vec0.y+vec2.y)
+
+                //this.move2Point(world.Player.x, world.Player.y)
+
+                this.move2Point(this.x+vec5.x, this.y+vec5.y);
+                
+                
+            }
+            checkCollision(){
+                
+                let dx = world.player.x - this.x;
+                let dy = world.player.y - this.y;
+                let d = Math.sqrt(dx*dx+dy*dy);
+
+                if(d<=22){
+                    this.mustBRem = true;
+                    world.player.hitPoints-=10;
+                    if(world.player.hitPoints<=0){
+                        console.log("G.O Your score: ", world.player.score)
+                        world.isPaused = true;
+                    }
+                }
+            }
+        }
+
+            
+
+
+        
+        
+        class Spawner extends Enemy{
+            constructor(x,y){
+                super(x,y,0,0);
+                this.speed = 0;
+                this.image.tint = 0xff00ff;
+                this.timePassed = 0;
+                this.lastCreationTime = 0;
+            }
+            step(dt){
+                super.step(dt);
+                this.timePassed+=dt;
+            }
+            makeDecision(){
+                super.makeDecision();
+                if(this.timePassed-this.lastCreationTime>=10){
+                    world.createEnemy(this.x, this.y);
+                    this.lastCreationTime = this.timePassed;
+                }
+            }
+           
+}
+        class Food extends MovingObject{
+            constructor(x, y){
+                super(x,y,2*Math.PI*Math.random(), 1+Math.random());
+                this.image.tint = 0xffff00;
+            }
+            makeDecision(){
+                let dx = world.Player.x-this.x;
+                let dy = world.Player.y-this.y;
+                let d = Math.sqrt(dx*dx+dy*dy);
+
+                if(d<=250){
+                    this.move2Point(this.x-dx, this.y-dy)
+                }
+                if ((this.x<0)||(this.x>1920)||(this.y<0)||(this.y>1080)){
+                    this.move2Point(Math.random()*1920, Math.random()*1080)
+                }
+            }
+            checkCollision(){
+                let dx = world.Player.x-this.x;
+                let dy = world.Player.y-this.y;
+                let d = Math.sqrt(dx*dx+dy*dy);
+
+                if (d<=32){
+                    this.mustBRem = true;
+                    this.score 
+                }
+            }
+        }
+        
+        let app = new PIXI.Application({ width:1920, height:1080});
+        document.body.appendChild(app.view);
+
+        let world = new World(app.stage);
+
+        app.stage.interactive = true;
+        app.stage.hitArea = app.screen;
+        app.stage.addEventListener('pointermove', (e) => {
+            world.HandlePointMove(e)
+            
+        });
+        app.stage.addEventListener('pointerdown', (e) => {
+            world.HandlePointDown(e)
+        });
+        document.addEventListener("keydown", (e)=> {
+            //console.log(e)
+            world.HandleKeyDown(e)
+            /*if(e.code = "e"){
+                world.isPaused = !world.isPaused;
+            }
+            */
+        })
+
+    
+        world.createPlayer(250,350)
+        world.createSpawner(500,500)
+        for (let l = 0; l < 1000; l++) {
+            world.createObjectOfClass(Food, 200, 200);
+        }
+       
+
+        
+        function update(dt){
+            
+          world.step(dt);
+        }
+        
+        
+
+
+
+        app.ticker.add(update)
+
+    </script>
+</body>
+
+</html>

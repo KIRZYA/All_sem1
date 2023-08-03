@@ -1,0 +1,117 @@
+
+<html> 
+<head>
+
+</head>
+<body>
+<script>
+
+
+class Vehicle{
+    constructor(license){
+        this.license = license;
+    }
+}
+class Bike extends Vehicle{
+    constructor(license){
+        super(license)
+    }
+}
+class Car extends Vehicle{
+    constructor(license){
+        super(license)
+    }
+}
+class Van extends Vehicle{
+    constructor(license){
+        super(license)
+    }
+}
+class ParkingLot{
+    constructor(size){
+this.slots=[];
+for (let i=0; i<size; i++){
+    this.slots.push(null);
+}
+    }
+    park(vehicle){
+        var len = 3;
+        if (vehicle instanceof Bike){
+                 len = 1;
+        }
+        else{
+            if(vehicle instanceof Car){
+                len = 2;
+            }
+        }
+        let id = this.findStartOfFreeSlotSegment(len);
+        if (id==-1){
+            return false;
+        }
+        else{
+            for (let i=id; i<id+len; i++){
+                this.slots[i] = vehicle.license;
+            }
+        }
+        return true;
+    }
+
+    retrieve(license) {
+        let res = false;
+            for(let i=0; i<this.slots.length; i++){
+                if(this.slots[i]==license){
+                    this.slots[i]=null;
+                    res=true;
+                }
+
+            }
+return res;
+
+    }
+    findStartOfFreeSlotSegment(len) {
+
+        let res = -1;
+        
+        for (let i=0; i<this.slots.length; i++){
+            if (this.slots[i]==null ){
+                let canPlace = true;
+               
+                for (let j=i+1; j<i+len; j++){
+                    if (this.slots[j]!==null){
+                        canPlace = false;
+                        break;
+                    }
+                }
+
+               
+                if (canPlace){
+                    res=i;
+                    break;
+                }
+            }
+        }
+        return res;
+
+    }
+
+    show(){
+        console.log("parking now")
+        console.log(this.slots)
+        console.log("___________")
+    }
+}
+let p = new ParkingLot(4);
+p.show();
+p.park(new Car("C1"));
+p.show();
+p.park(new Car("C2"));
+p.show();
+</script>
+
+</body>
+
+</html>
+ 
+
+
+

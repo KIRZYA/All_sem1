@@ -1,0 +1,48 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <script>
+            class JAR{
+                constructor(){
+                    this.total = 0;
+                    this.applejs = 0;
+                    this.bananjs = 0;
+                    this.bananacon = 0;
+                    this.applecon = 0;
+                }
+                add(amount, type){
+                    if (type === 'banana'){
+                        this.bananjs += amount;
+                    }
+                    else if(type === 'apple'){
+                        this.applejs += amount;
+                    }
+                    this.total += amount;
+                }
+                pourOut(amount){
+                    
+                    
+                    this.total -= amount;
+                    bananjs = JAR.getConcentration(banana) * this.total;
+                    applejs = JAR.getConcentration(apple) * this.total;
+                }
+                getTotalAmount(){
+                    return this.total;
+                }
+
+                
+                getConcentration(type){
+                    if(type === 'banana'){
+                        this.bananacon = this.bananjs / this.total;
+                    }
+                    if(type === 'apple'){
+                        this.applecon = this.applejs / this.total;
+                    }
+                }
+              
+            }
+            
+        </script>
+    </body>
+</html>

@@ -1,0 +1,86 @@
+<html>
+<head>
+    <title>dd</title>
+</head>
+<body>
+    <script>
+     /*   
+        function f2d(x){
+            var z = true;
+            if(x==2){
+                return z = true;
+            }
+            if(x%2==0){
+                return z = false;
+            }
+            for (let count_1 = 3; count_1 <= Math.sqrt(x); count_1+=2) {
+                if (x % count_1==0){
+                    z = false;
+                }
+            }
+            return z
+        }
+        
+        console.log("test 1", f2d(2)== true);
+        console.log("test 2", f2d(3)== true);
+        console.log("test 3", f2d(4)== false);
+        console.log("test 4", f2d(5)== true);
+        let t = Date.now();
+        console.log("test 5", f2d(999999937)== true);
+        console.log(Date.now()-t);
+        t = Date.now();
+        console.log("test 6", f2d(999999971)== false);
+        console.log(Date.now()-t);
+*/
+
+
+        function listallDivisions(n){
+            var res = [];
+            var s = 0
+                for (let i=1; i <= Math.sqrt(n); i++){
+                    if (n%i==0){
+                        res[s]=i;
+                        s++;
+                        res[s]=n/i;
+                        s++;
+                    }
+                }
+            return res;
+
+        
+
+        }
+        function allcj(c){
+            res = [[],[]];
+            for (let i=1; i<=Infinity; i++){
+                for (){
+                    if (){
+                        res[z][s]=i;
+                        s++;
+                        res[z][s]=n/i;
+                        s++;
+                    }
+                }
+                res.sort();
+                for (){
+                    
+                }
+                if ()
+            }
+
+
+
+
+        }
+            console.log(5, listallDivisions(5));
+            console.log(8, listallDivisions(8));
+            console.log(10, listallDivisions(10));
+            console.log(72, listallDivisions(72));
+            console.log(28, listallDivisions(28));
+            console.log(6, listallDivisions(6));
+
+    </script>
+    
+</body>
+
+</html>

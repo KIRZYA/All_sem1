@@ -1,0 +1,14 @@
+{
+    "name": "kh-21/1",
+    "description": "test project",
+    "type": "project",
+    "license": "GNU GPL",
+    "autoload": {
+        "psr-4": {
+            "Kh21\\1\\": "Test/"
+        }
+    },
+    "require": {
+
+    }
+}

@@ -1,0 +1,82 @@
+<html>
+<head>
+    <title>dd</title>
+</head>
+<body>
+    <script>
+      
+        class Paginator{
+            constructor(data,size){
+                this.data = data;
+                this.pageSize = Math.floor(size);
+                this.currentPageId = 0;
+                this.index = index;
+            }
+            showPageOfId(id){
+                id = Math.floor(id);
+                this.currentPageId = id;
+                let res = [];
+                //res.push(this.data[this.pageSize*id])
+                
+                let numElementsOnPage = this.findNumElementsOnPage(id);
+                let i0 = this.pageSize * id;
+                for (let i = i0; i<i0+numElementsOnPage; i++){
+                    res.push(this.data[i])
+                    
+                }
+                return res;
+            }
+            showNextPage(){
+                if(this.currentPageId<this.data.length % this.pageSize){
+                    return this.showPageOfId(this.currentPageId+1);
+                }
+                else{
+                    return this.showPageOfId(this.currentPageId);
+                }
+            }
+            showPrevPage(){
+                if(this.currentPageId>0){
+                    return this.showPageOfId(this.currentPageId-1);
+                }
+                else{
+                    return this.showPageOfId(this.currentPageId);
+                }
+               
+            }
+            findNumElementsOnPage(id){
+                if (id<0){
+                    return 0;
+                }
+                id = Math.floor(id);
+                if((id+1)*this.pageSize-1<this.data.length)
+                return this.pageSize;
+                else{
+                    if (id*this.pageSize<this.data.length){
+                        return this.data.length % this.pageSize;
+                    }
+                  else{
+                    return 0;
+                  }  
+                }
+            }
+            
+            
+            setNewPageSize(size){
+                this.pageSize = size;
+            }  
+             pageindex(index){
+                
+             }
+
+        }
+            let pg = new Paginator(["A","B","C","D","E","F","G","H","I"],3) ;
+            console.log(pg.showPageOfId(0));
+            console.log(pg.showPrevPage());
+            console.log(pg.showPrevPage());
+            console.log(pg.showPrevPage());
+     
+    </script>
+    
+</body>
+
+</html>
